@@ -11,8 +11,10 @@ if (!shelljs.which('git')) {
 commander.version('1.0.0');
 commander.command('build')
     .description('builds all themes')
-    .action(() => {
-    builder.builder();
+    .option('-t, --template [template]', 'build with only the specified template')
+    .option('-s, --scheme [scheme]', 'build with only the specified scheme')
+    .action(function (options) {
+    builder.builder(options);
 });
 commander.command('update')
     .description('clones or pulls sources, schemes, and template repositories')

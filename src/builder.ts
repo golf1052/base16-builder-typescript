@@ -10,18 +10,12 @@ import * as mustache from 'mustache';
 import * as color from 'color';
 const slugify = require('slugify');
 
-export function builder() {
+export function builder(options?: any) {
     let sourcesDir = path.resolve('.', 'sources');
     if (!fs.existsSync(sourcesDir)) {
         console.error('Could not find sources directory. Please run base16-builder update first. Exiting.');
         process.exit(1);
     }
-
-    let themesDir = path.resolve('.', 'themes');
-    if (!fs.existsSync(themesDir)) {
-        mkdirp.sync(themesDir, helpers.mkdirpErrorHandler);
-    }
-    shelljs.rm('-rf', `${themesDir}/*`);
 
     let schemesDir = path.resolve(sourcesDir, 'schemes');
     let schemeFolders = fs.readdirSync(schemesDir).filter(d => {
@@ -32,8 +26,26 @@ export function builder() {
         return d.indexOf('.') == -1;
     });
 
+    if (options.template && templateFolders.indexOf(options.template) == -1) {
+        console.error(`Template ${options.template} does not exist. Exiting.`);
+        process.exit(1);
+    }
+    if (options.scheme && schemeFolders.indexOf(options.scheme) == -1) {
+        console.error(`Scheme ${options.scheme} does not exist. Exiting.`);
+        process.exit(1);
+    }
+
+    let themesDir = path.resolve('.', 'themes');
+    if (!fs.existsSync(themesDir)) {
+        mkdirp.sync(themesDir, helpers.mkdirpErrorHandler);
+    }
+    shelljs.rm('-rf', `${themesDir}/*`);
+
     // for each template folder (alacritty, c_header, crosh, etc.)
     templateFolders.forEach(templateFolder => {
+        if (options.template && templateFolder != options.template) {
+            return;
+        }
         let currentTemplateDirectory = path.resolve(templatesDir, templateFolder);
         // if (!fs.existsSync(currentTemplateDirectory)) {
         //     mkdirp.sync(currentTemplateDirectory, helpers.mkdirpErrorHandler);
@@ -53,6 +65,9 @@ export function builder() {
             let fileExtension = config[key].extension;
             // then for each scheme folder
             schemeFolders.forEach(schemeFolder => {
+                if (options.scheme && schemeFolder != options.scheme) {
+                    return;
+                }
                 let currentSchemeDirectory = path.resolve(schemesDir, schemeFolder);
                 // get all the scheme files
                 let yamlFiles = fs.readdirSync(currentSchemeDirectory).filter(d => {
