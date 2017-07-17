@@ -1,0 +1,44 @@
+{
+  "name": "base16-builder-typescript",
+  "version": "1.0.0",
+  "description": "Base16 builder in written in Typescript",
+  "bin": {
+    "base16-builder": "./bin/main.js"
+  },
+  "main": "./out/src/base16-builder.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "debug-builder": "node --nolazy --debug-brk=5858 ./out/src/builder.js",
+    "debug-update": "node --nolazy --debug-brk=5858 ./out/src/update.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/golf1052/base16-builder-typescript.git"
+  },
+  "keywords": [
+    "base16",
+    "base16-builder"
+  ],
+  "author": "golf1052",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/golf1052/base16-builder-typescript/issues"
+  },
+  "homepage": "https://github.com/golf1052/base16-builder-typescript#readme",
+  "dependencies": {
+    "@types/color": "^1.0.4",
+    "@types/commander": "^2.9.1",
+    "@types/js-yaml": "^3.9.0",
+    "@types/mkdirp": "^0.5.0",
+    "@types/mustache": "^0.8.29",
+    "@types/node": "^8.0.13",
+    "@types/shelljs": "^0.7.2",
+    "color": "^2.0.0",
+    "commander": "^2.11.0",
+    "js-yaml": "^3.9.0",
+    "mkdirp": "^0.5.1",
+    "mustache": "^2.3.0",
+    "shelljs": "^0.7.8",
+    "slugify": "^1.1.0"
+  }
+}
