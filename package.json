@@ -19,7 +19,11 @@
     "base16",
     "base16-builder"
   ],
-  "author": "golf1052",
+  "author": {
+    "email": "golf1052@msn.com",
+    "name": "Sanders Lauture",
+    "url": "https://golf1052.com"
+  },
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/golf1052/base16-builder-typescript/issues"
