@@ -76,13 +76,17 @@ function builder(options) {
                         // test checking if scheme file is properly formatted
                         return;
                     }
+                    let filename = yamlFile;
+                    if (yamlFile.lastIndexOf('.') != -1) {
+                        filename = yamlFile.substring(0, yamlFile.lastIndexOf('.'));
+                    }
+                    let slug = slugify(filename).toLowerCase();
                     // create the view
-                    let view = createView(yaml);
+                    let view = createView(yaml, slug);
                     // load the mustache file
                     let mustacheFile = fs.readFileSync(path.resolve(currentTemplateDirectory, 'templates', `${key}.mustache`), 'utf8');
                     // render the file
                     let renderedFile = mustache.render(mustacheFile, view);
-                    let slug = slugify(yaml.scheme).toLowerCase();
                     // and write it out to the output directory with the appropriate name
                     fs.writeFileSync(path.resolve(outputDir, `${slug}${fileExtension}`), renderedFile);
                 });
@@ -91,11 +95,11 @@ function builder(options) {
     });
 }
 exports.builder = builder;
-function createView(yaml) {
+function createView(yaml, slug) {
     let final = {};
     final['scheme-name'] = yaml.scheme;
     final['scheme-author'] = yaml.author;
-    final['scheme-slug'] = slugify(yaml.scheme);
+    final['scheme-slug'] = slug;
     const baseIds = [
         'base00',
         'base01',
