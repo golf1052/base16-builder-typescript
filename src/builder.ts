@@ -93,7 +93,7 @@ export function builder(options?: any) {
                     // render the file
                     let renderedFile = mustache.render(mustacheFile, view);
                     // and write it out to the output directory with the appropriate name
-                    fs.writeFileSync(path.resolve(outputDir, `${slug}${fileExtension}`), renderedFile);
+                    fs.writeFileSync(path.resolve(outputDir, `base16-${slug}${fileExtension}`), renderedFile);
                 });
             });
         });
