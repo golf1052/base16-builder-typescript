@@ -1,6 +1,6 @@
 {
   "name": "base16-builder-typescript",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Base16 builder in written in Typescript",
   "bin": {
     "base16-builder": "./bin/main.js"
