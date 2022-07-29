@@ -3,7 +3,6 @@
     "tasks": [
         {
             "label": "Typescript Watch",
-            "taskName": "Typescript Watch",
             "command": "tsc -w"
         }
     ]

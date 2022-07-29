@@ -1,5 +1,3 @@
-'use strict';
-
 import * as commander from 'commander';
 import * as shelljs from 'shelljs';
 import * as update from './update';
@@ -10,25 +8,45 @@ if (!shelljs.which('git')) {
     process.exit(1);
 }
 
-commander.version('1.0.0');
-commander.command('build')
+const chunks = [];
+
+const program = new commander.Command();
+program.version('1.0.0');
+program.command('build')
     .description('builds all themes')
     .option('-t, --template [template]', 'build with only the specified template')
     .option('-s, --scheme [scheme]', 'build with only the specified scheme')
     .action(function(options) {
         builder.builder(options);
     });
-commander.command('update')
+program.command('update')
     .description('clones or pulls sources, schemes, and template repositories')
     .action(() => {
         update.update();
     });
-commander.command('*')
-    .action(() => {
-        commander.outputHelp();
+program
+    .option('-t, --template [template file]')
+    .action(function(options) {
+        if (process.stdin.isTTY) {
+            if (process.argv.length === 2) {
+                program.help();
+            } else {
+                console.error('Please pipe in a scheme file.');
+                process.exit(1);
+            }
+        } else {
+            process.stdin.on('readable', () => {
+                let chunk;
+                while ((chunk = process.stdin.read()) !== null) {
+                    chunks.push(chunk);
+                }
+            });
+        
+            process.stdin.on('end', () => {
+                const content = chunks.join('');
+                builder.buildFromPipe(content, options);
+            });
+        }
     });
-commander.parse(process.argv);
 
-if (!process.argv.slice(2).length) {
-    commander.outputHelp();
-}
+program.parse(process.argv);

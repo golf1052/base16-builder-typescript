@@ -8,8 +8,7 @@
   "main": "./out/src/base16-builder.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "debug-builder": "node --nolazy --debug-brk=5858 ./out/src/builder.js",
-    "debug-update": "node --nolazy --debug-brk=5858 ./out/src/update.js"
+    "debug-base16-builder": "node --inspect ./out/src/base16-builder.js"
   },
   "repository": {
     "type": "git",
@@ -30,19 +29,20 @@
   },
   "homepage": "https://github.com/golf1052/base16-builder-typescript#readme",
   "dependencies": {
-    "@types/color": "^1.0.4",
-    "@types/commander": "^2.9.1",
-    "@types/js-yaml": "^3.9.0",
-    "@types/mkdirp": "^0.5.0",
-    "@types/mustache": "^0.8.29",
-    "@types/node": "^8.0.13",
-    "@types/shelljs": "^0.7.2",
-    "color": "^2.0.0",
-    "commander": "^2.11.0",
-    "js-yaml": "^3.9.0",
-    "mkdirp": "^0.5.1",
-    "mustache": "^2.3.0",
-    "shelljs": "^0.7.8",
-    "slugify": "^1.1.0"
+    "color": "^4.2.3",
+    "commander": "^9.4.0",
+    "js-yaml": "^4.1.0",
+    "mkdirp": "^1.0.4",
+    "mustache": "^4.2.0",
+    "shelljs": "^0.8.5",
+    "slugify": "^1.6.5"
+  },
+  "devDependencies": {
+    "@types/color": "^3.0.3",
+    "@types/js-yaml": "^4.0.5",
+    "@types/mkdirp": "^1.0.2",
+    "@types/mustache": "^4.2.1",
+    "@types/node": "^16.11.45",
+    "@types/shelljs": "^0.8.11"
   }
 }

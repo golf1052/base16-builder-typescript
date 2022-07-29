@@ -1,11 +1,8 @@
-'use strict';
-
 import * as fs from 'fs';
 import * as path from 'path';
 import * as jsyaml from 'js-yaml';
 import * as mkdirp from 'mkdirp';
 import * as shelljs from 'shelljs';
-import * as helpers from './helpers';
 import * as mustache from 'mustache';
 import * as color from 'color';
 const slugify = require('slugify');
@@ -37,7 +34,12 @@ export function builder(options?: any) {
 
     let themesDir = path.resolve('.', 'themes');
     if (!fs.existsSync(themesDir)) {
-        mkdirp.sync(themesDir, helpers.mkdirpErrorHandler);
+        try {
+            mkdirp.sync(themesDir);
+        } catch (err) {
+            console.error(err);
+            process.exit(1);
+        }
     }
     shelljs.rm('-rf', `${themesDir}/*`);
 
@@ -47,11 +49,8 @@ export function builder(options?: any) {
             return;
         }
         let currentTemplateDirectory = path.resolve(templatesDir, templateFolder);
-        // if (!fs.existsSync(currentTemplateDirectory)) {
-        //     mkdirp.sync(currentTemplateDirectory, helpers.mkdirpErrorHandler);
-        // }
         // load the config in template_folder/templates/config.yaml
-        let config: any = jsyaml.safeLoad(fs.readFileSync(path.resolve(currentTemplateDirectory, 'templates/config.yaml'), 'utf8'));
+        let config: any = jsyaml.load(fs.readFileSync(path.resolve(currentTemplateDirectory, 'templates/config.yaml'), 'utf8'));
         // get the keys inside the template folder (default, default-256, etc.)
         let configKeys = Object.keys(config);
         // then for each key
@@ -59,7 +58,12 @@ export function builder(options?: any) {
             // create the output directory at themes/template_folder/output
             let outputDir = path.join(themesDir, templateFolder, config[key].output);
             if (!fs.existsSync(outputDir)) {
-                mkdirp.sync(outputDir, helpers.mkdirpErrorHandler);
+                try {
+                    mkdirp.sync(outputDir);
+                } catch (err) {
+                    console.error(err);
+                    process.exit(1);
+                }
             }
             // grab the file extension
             let fileExtension = config[key].extension;
@@ -76,35 +80,51 @@ export function builder(options?: any) {
                 // then for each scheme file
                 yamlFiles.forEach(yamlFile => {
                     // load the scheme file
-                    let yaml = jsyaml.safeLoad(fs.readFileSync(path.resolve(currentSchemeDirectory, yamlFile), 'utf8'));
+                    let yaml: any = jsyaml.load(fs.readFileSync(path.resolve(currentSchemeDirectory, yamlFile), 'utf8'));
                     if (!yaml.base00) {
                         // test checking if scheme file is properly formatted
                         return;
                     }
-                    let filename = yamlFile;
-                    if (yamlFile.lastIndexOf('.') != -1) {
-                        filename = yamlFile.substring(0, yamlFile.lastIndexOf('.'));
-                    }
-                    let slug = slugify(filename).toLowerCase();
                     // create the view
-                    let view = createView(yaml, slug);
+                    let view = createView(yaml);
                     // load the mustache file
                     let mustacheFile = fs.readFileSync(path.resolve(currentTemplateDirectory, 'templates', `${key}.mustache`), 'utf8');
                     // render the file
                     let renderedFile = mustache.render(mustacheFile, view);
                     // and write it out to the output directory with the appropriate name
-                    fs.writeFileSync(path.resolve(outputDir, `base16-${slug}${fileExtension}`), renderedFile);
+                    fs.writeFileSync(path.resolve(outputDir, `base16-${view['scheme-slug']}${fileExtension}`), renderedFile);
                 });
             });
         });
     });
 }
 
-function createView(yaml: any, slug: string): Object {
+export function buildFromPipe(scheme: string, options?: any) {
+    if (!options.template) {
+        console.error('Please specify a template file.');
+        process.exit(1);
+    }
+    const yaml: any = jsyaml.load(scheme);
+    if (!yaml.base00) {
+        console.error('Scheme file is not properly formatted.');
+        process.exit(1);
+    }
+    const mustacheFile = fs.readFileSync(options.template, 'utf8');
+    const renderedFile = buildTemplate(yaml, mustacheFile);
+    process.stdout.write(renderedFile);
+}
+
+function buildTemplate(schemeYaml: any, mustacheFile: string): string {
+    let view = createView(schemeYaml);
+    let renderedFile = mustache.render(mustacheFile, view);
+    return renderedFile;
+}
+
+function createView(yaml: any): object {
     let final = {};
     final['scheme-name'] = yaml.scheme;
     final['scheme-author'] = yaml.author;
-    final['scheme-slug'] = slug;
+    final['scheme-slug'] = slugify(yaml.scheme).toLowerCase();
     const baseIds = [
         'base00',
         'base01',
@@ -125,6 +145,7 @@ function createView(yaml: any, slug: string): Object {
     ];
     baseIds.forEach(id => {
         final[`${id}-hex`] = yaml[id];
+        final[`${id}-hex-bgr`] = yaml[id].slice(4, 6) + yaml[id].slice(2, 4) + yaml[id].slice(0, 2);
         final[`${id}-hex-r`] = yaml[id].slice(0, 2);
         final[`${id}-hex-g`] = yaml[id].slice(2, 4);
         final[`${id}-hex-b`] = yaml[id].slice(4, 6);
@@ -134,6 +155,9 @@ function createView(yaml: any, slug: string): Object {
         final[`${id}-dec-r`] = color(`#${yaml[id]}`).red() / 255;
         final[`${id}-dec-g`] = color(`#${yaml[id]}`).green() / 255;
         final[`${id}-dec-b`] = color(`#${yaml[id]}`).blue() / 255;
+        final[`${id}-hsl-h`] = color(`#${yaml[id]}`).hsl().hue();
+        final[`${id}-hsl-s`] = color(`#${yaml[id]}`).hsl().saturationl();
+        final[`${id}-hsl-l`] = color(`#${yaml[id]}`).hsl().lightness();
     });
     return final;
 }

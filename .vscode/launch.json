@@ -7,32 +7,11 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Debug Builder",
+            "name": "Debug base16-builder",
             "runtimeExecutable": "npm",
             "runtimeArgs": [
                 "run-script",
-                "debug-builder"
-            ],
-            "port": 5858
-        },
-        {
-            "type": "node",
-            "request": "launch",
-            "name": "Debug Update",
-            "runtimeExecutable": "npm",
-            "runtimeArgs": [
-                "run-script",
-                "debug-update"
-            ],
-            "port": 5858
-        },
-        {
-            "type": "node",
-            "request": "attach",
-            "name": "Attach",
-            "port": 5858,
-            "outFiles": [
-                "${workspaceRoot}/out/src/*.js"
+                "debug-base16-builder"
             ]
         }
     ]
