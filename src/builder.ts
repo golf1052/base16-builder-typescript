@@ -50,7 +50,14 @@ export function builder(options?: any) {
         }
         let currentTemplateDirectory = path.resolve(templatesDir, templateFolder);
         // load the config in template_folder/templates/config.yaml
-        let config: any = jsyaml.load(fs.readFileSync(path.resolve(currentTemplateDirectory, 'templates/config.yaml'), 'utf8'));
+        let configFile: string;
+        try {
+            configFile = fs.readFileSync(path.resolve(currentTemplateDirectory, 'templates/config.yaml'), 'utf8');
+        } catch (err) {
+            // Config file does not exist.
+            return;
+        }
+        let config: any = jsyaml.load(configFile);
         // get the keys inside the template folder (default, default-256, etc.)
         let configKeys = Object.keys(config);
         // then for each key
