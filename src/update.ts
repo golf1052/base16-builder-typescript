@@ -18,9 +18,10 @@ export function update() {
     let sources: any = jsyaml.load(fs.readFileSync(path.resolve(__dirname, '../../sources.yaml'), 'utf8'));
     gitUpdate(sources, sourcesDir);
 
-    let schemesDir = path.resolve(sourcesDir, 'schemes');
-    let schemes: any = jsyaml.load(fs.readFileSync(path.resolve(schemesDir, 'list.yaml'), 'utf8'));
-    gitUpdate(schemes, schemesDir);
+    // Only gitUpdate schemes if the repository is from chriskempson.
+    // let schemesDir = path.resolve(sourcesDir, 'schemes');
+    // let schemes: any = jsyaml.load(fs.readFileSync(path.resolve(schemesDir, 'list.yaml'), 'utf8'));
+    // gitUpdate(schemes, schemesDir);
 
     let templatesDir = path.resolve(sourcesDir, 'templates');
     let templates: any = jsyaml.load(fs.readFileSync(path.resolve(templatesDir, 'list.yaml'), 'utf8'));

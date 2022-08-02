@@ -16,7 +16,8 @@ program.command('build')
     .description('builds all themes')
     .option('-t, --template [template]', 'build with only the specified template')
     .option('-s, --scheme [scheme]', 'build with only the specified scheme')
-    .action(function(options) {
+    .action(function() {
+        const options = program.opts();
         builder.builder(options);
     });
 program.command('update')
@@ -26,7 +27,8 @@ program.command('update')
     });
 program
     .option('-t, --template [template file]')
-    .action(function(options) {
+    .action(function() {
+        const options = program.opts();
         if (process.stdin.isTTY) {
             if (process.argv.length === 2) {
                 program.help();

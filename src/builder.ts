@@ -15,8 +15,13 @@ export function builder(options?: any) {
     }
 
     let schemesDir = path.resolve(sourcesDir, 'schemes');
-    let schemeFolders = fs.readdirSync(schemesDir).filter(d => {
-        return d.indexOf('.') == -1;
+    let schemes = fs.readdirSync(schemesDir).filter(f => {
+        // get scheme file names
+        return f.endsWith('.yaml');
+    })
+    .map(f => {
+        // and then remove the extension to make it easier to match with the scheme option
+        return f.slice(0, -5);
     });
     let templatesDir = path.resolve(sourcesDir, 'templates');
     let templateFolders = fs.readdirSync(templatesDir).filter(d => {
@@ -27,7 +32,7 @@ export function builder(options?: any) {
         console.error(`Template ${options.template} does not exist. Exiting.`);
         process.exit(1);
     }
-    if (options.scheme && schemeFolders.indexOf(options.scheme) == -1) {
+    if (options.scheme && schemes.indexOf(options.scheme) == -1) {
         console.error(`Scheme ${options.scheme} does not exist. Exiting.`);
         process.exit(1);
     }
@@ -75,32 +80,30 @@ export function builder(options?: any) {
             // grab the file extension
             let fileExtension = config[key].extension;
             // then for each scheme folder
-            schemeFolders.forEach(schemeFolder => {
-                if (options.scheme && schemeFolder != options.scheme) {
+            schemes.forEach(scheme => {
+                if (options.scheme && scheme != options.scheme) {
                     return;
                 }
-                let currentSchemeDirectory = path.resolve(schemesDir, schemeFolder);
-                // get all the scheme files
-                let yamlFiles = fs.readdirSync(currentSchemeDirectory).filter(d => {
-                    return d.endsWith('.yaml');
-                });
-                // then for each scheme file
-                yamlFiles.forEach(yamlFile => {
-                    // load the scheme file
-                    let yaml: any = jsyaml.load(fs.readFileSync(path.resolve(currentSchemeDirectory, yamlFile), 'utf8'));
-                    if (!yaml.base00) {
-                        // test checking if scheme file is properly formatted
-                        return;
-                    }
-                    // create the view
-                    let view = createView(yaml);
-                    // load the mustache file
-                    let mustacheFile = fs.readFileSync(path.resolve(currentTemplateDirectory, 'templates', `${key}.mustache`), 'utf8');
-                    // render the file
-                    let renderedFile = mustache.render(mustacheFile, view);
-                    // and write it out to the output directory with the appropriate name
-                    fs.writeFileSync(path.resolve(outputDir, `base16-${view['scheme-slug']}${fileExtension}`), renderedFile);
-                });
+                let currentSchemeFile = path.resolve(schemesDir, `${scheme}.yaml`);
+                // load the scheme file
+                let yaml: any = jsyaml.load(fs.readFileSync(currentSchemeFile, 'utf8'));
+                if (!yaml.base00) {
+                    // test checking if scheme file is properly formatted
+                    return;
+                }
+                // create the view
+                let view = createView(yaml);
+                // load the mustache file
+                let mustacheFile = fs.readFileSync(path.resolve(currentTemplateDirectory, 'templates', `${key}.mustache`), 'utf8');
+                // render the file
+                let renderedFile = mustache.render(mustacheFile, view);
+                // and write it out to the output directory with the appropriate name
+                try {
+                    const outputFile = path.resolve(outputDir, `base16-${view['scheme-slug']}${fileExtension}`);
+                    fs.writeFileSync(outputFile, renderedFile);
+                } catch (err) {
+                    console.error(err);
+                }
             });
         });
     });
