@@ -32,9 +32,9 @@ Themes will be placed in `themes` in the directory where you ran `base16-builder
 This will build with only the specified template. The template names are specified [here](https://github.com/chriskempson/base16-templates-source/blob/master/list.yaml). For example `base16-builder build --template textmate` will build only the Textmate templates with all schemes.
 
 `base16-builder build --scheme [scheme]`  
-This will build with only the specified scheme. The scheme names are specified [here](https://github.com/chriskempson/base16-schemes-source/blob/main/list.yaml). For example `base16-builder build --scheme default` will build all templates with only the default schemes.
+This will build with only the specified scheme. The scheme names are specified [here](https://github.com/base16-project/base16-schemes). For example `base16-builder build --scheme default-dark` will build all templates with only the default dark scheme.
 
-These options can be used with each other. For example `base16-builder build --template textmate --scheme default` will only build the Textmate theme with only the default schemes.
+These options can be used with each other. For example `base16-builder build --template textmate --scheme default-dark` will only build the Textmate theme with only the default schemes.
 
 ## References
 

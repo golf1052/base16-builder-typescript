@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - 2022-08-01
+### Changed
+- Changed schemes source to [base16-project/base16-schemes](https://github.com/base16-project/base16-schemes) to bring back Tomorrow themes. Doing this caused a breaking change in the `--scheme` parameter. Instead of passing in the scheme folder you now must pass in the name of the scheme file.
+
+### Fixed
+- Fixed bug where options wouldn't be used.
+
 ## [1.2.1] - 2022-08-01
 ### Fixed
 - Fixed bug where crash would happen if template config.yaml didn't exist.
